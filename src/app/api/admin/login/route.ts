@@ -49,8 +49,19 @@ export async function POST(request: NextRequest) {
     details: { email },
   });
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     user: adminUser,
     session: authData.session,
   });
+
+  // Set admin session cookie
+  response.cookies.set('admin-session', authData.session?.access_token || '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24, // 24 hours
+  });
+
+  return response;
 }

@@ -2,15 +2,27 @@
 
 import { useMailStore } from '@/store/useMailStore';
 import { cn, formatDate, truncateText } from '@/lib/utils';
-import { Inbox, Lock } from 'lucide-react';
+import { Inbox, Lock, Trash2 } from 'lucide-react';
 import Badge from '@/components/ui/Badge';
 
 export default function MessageList() {
-  const { messages, selectedMessage, setSelectedMessage, filterAliasId } = useMailStore();
+  const { messages, selectedMessage, setSelectedMessage, filterAliasId, setMessages } = useMailStore();
 
   const filteredMessages = filterAliasId
     ? messages.filter((m) => m.alias_id === filterAliasId)
     : messages;
+
+  const handleDelete = async (e: React.MouseEvent, messageId: string) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`/api/messages/${messageId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setMessages(messages.filter((m) => m.id !== messageId));
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error);
+    }
+  };
 
   if (filteredMessages.length === 0) {
     return (
@@ -47,7 +59,7 @@ export default function MessageList() {
           <div
             key={message.id}
             className={cn(
-              'px-4 py-3 cursor-pointer transition-colors',
+              'px-4 py-3 cursor-pointer transition-colors group',
               selectedMessage?.id === message.id
                 ? 'bg-primary/5 border-l-2 border-l-primary'
                 : 'hover:bg-muted',
@@ -85,6 +97,13 @@ export default function MessageList() {
                     OTP
                   </Badge>
                 )}
+                <button
+                  onClick={(e) => handleDelete(e, message.id)}
+                  className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 transition-all"
+                  title="Delete message"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           </div>

@@ -2,14 +2,15 @@
 
 import { useMailStore } from '@/store/useMailStore';
 import { formatDate } from '@/lib/utils';
-import { ArrowLeft, Copy, Lock, Mail, User } from 'lucide-react';
+import { ArrowLeft, Copy, Lock, Mail, User, Trash2 } from 'lucide-react';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
 
 export default function MessageDetail() {
-  const { selectedMessage, setSelectedMessage, markAsRead } = useMailStore();
+  const { selectedMessage, setSelectedMessage, markAsRead, messages, setMessages } = useMailStore();
   const [otpCopied, setOtpCopied] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (selectedMessage && !selectedMessage.is_read) {
@@ -40,17 +41,43 @@ export default function MessageDetail() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!selectedMessage) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/messages/${selectedMessage.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setMessages(messages.filter((m) => m.id !== selectedMessage.id));
+        setSelectedMessage(null);
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden h-full flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-border">
-        <button
-          onClick={() => setSelectedMessage(null)}
-          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-3 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to inbox
-        </button>
+        <div className="flex items-center justify-between mb-3">
+          <button
+            onClick={() => setSelectedMessage(null)}
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to inbox
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="flex items-center gap-1 text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
 
         <h2 className="text-lg font-semibold text-foreground">
           {selectedMessage.subject || '(No Subject)'}
