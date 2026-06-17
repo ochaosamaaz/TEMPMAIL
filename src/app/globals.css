@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: 59 130 246;
+  --color-primary-foreground: 255 255 255;
+  --color-secondary: 241 245 249;
+  --color-secondary-foreground: 15 23 42;
+  --color-background: 255 255 255;
+  --color-foreground: 15 23 42;
+  --color-card: 255 255 255;
+  --color-card-foreground: 15 23 42;
+  --color-border: 226 232 240;
+  --color-muted: 241 245 249;
+  --color-muted-foreground: 100 116 139;
+  --color-accent: 59 130 246;
+}
+
+@theme inline {
+  --color-primary: rgb(var(--color-primary));
+  --color-primary-foreground: rgb(var(--color-primary-foreground));
+  --color-secondary: rgb(var(--color-secondary));
+  --color-secondary-foreground: rgb(var(--color-secondary-foreground));
+  --color-background: rgb(var(--color-background));
+  --color-foreground: rgb(var(--color-foreground));
+  --color-card: rgb(var(--color-card));
+  --color-card-foreground: rgb(var(--color-card-foreground));
+  --color-border: rgb(var(--color-border));
+  --color-muted: rgb(var(--color-muted));
+  --color-muted-foreground: rgb(var(--color-muted-foreground));
+  --color-accent: rgb(var(--color-accent));
+}
+
+body {
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--color-muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-muted-foreground) / 0.5);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
