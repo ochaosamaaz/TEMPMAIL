@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Shield, Mail, Lock } from 'lucide-react';
 import Button from '@/components/ui/Button';
 
@@ -10,7 +9,6 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,12 +20,15 @@ export default function AdminLoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include',
       });
 
+      const data = await res.json();
+
       if (res.ok) {
-        router.push('/admin');
+        // Use window.location for full reload so middleware picks up cookies
+        window.location.href = '/admin';
       } else {
-        const data = await res.json();
         setError(data.error || 'Login failed');
       }
     } catch {
